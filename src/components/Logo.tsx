@@ -22,7 +22,7 @@ const Logo: React.FC<LogoProps> = ({ className }) => {
       </div>
       <div className="flex flex-col">
         <span className="font-bold text-xl gradient-text tracking-tight">Harmoniqa</span>
-        <span className="text-xs text-gray-200 -mt-1 tracking-widest">MUSIC CONNECTS</span>
+        <span className="text-xs text-gray-200 -mt-1 tracking-widest">FIND · BOOK · PERFORM</span>
       </div>
     </div>
   );

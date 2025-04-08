@@ -1,17 +1,23 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import Navbar from '@/components/Navbar';
 import UserRoleCard from '@/components/UserRoleCard';
 
 const Index = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleRoleSelect = (role: string) => {
-    toast({
-      title: "Role Selected",
-      description: `You've selected the ${role} role. This feature is coming soon!`,
-    });
+    if (role === 'Artist') {
+      toast({
+        title: "Artist Features Coming Soon",
+        description: "The artist features are still under development. Stay tuned!",
+      });
+    } else if (role === 'Event Organizer') {
+      navigate('/login');
+    }
   };
 
   return (
