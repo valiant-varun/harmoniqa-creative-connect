@@ -31,7 +31,7 @@ const Index: React.FC = () => {
             Welcome to <span className="gradient-text">Harmoniqa!</span>
           </h1>
           <p className="text-xl sm:text-2xl text-muted-foreground mb-12">
-            Where creativity meets opportunity. Book, perform, and shine with Harmoniqa.
+            Where creativity meets opportunity. Find . Book . Perform
           </p>
           
           <div className="my-12">
@@ -39,14 +39,14 @@ const Index: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
               <Link to="/artist/signup">
                 <UserRoleCard 
-                  icon={Music} 
+                  iconName="Music" 
                   title="Artist" 
                   description="Showcase your talent and get booked for events"
                 />
               </Link>
               <Link to="/signup">
                 <UserRoleCard 
-                  icon={User} 
+                  iconName="User" 
                   title="Event Organizer" 
                   description="Find and book talented artists for your events"
                 />

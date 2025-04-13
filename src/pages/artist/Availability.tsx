@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import ArtistLayout from '@/components/layouts/ArtistLayout';
 import { Calendar } from '@/components/ui/calendar';
@@ -115,8 +114,8 @@ const ArtistAvailability: React.FC = () => {
   };
   
   // Custom day rendering for the calendar
-  const renderDay = (day: Date) => {
-    const event = events.find(event => isSameDay(event.date, day));
+  const renderDay = (date: Date) => {
+    const event = events.find(event => isSameDay(event.date, date));
     if (!event) return null;
     
     let dotColor = 'bg-green-500';
@@ -160,10 +159,10 @@ const ArtistAvailability: React.FC = () => {
                   selected={selectedDay}
                   onSelect={handleDaySelect}
                   components={{
-                    DayContent: ({ day }) => (
+                    DayContent: (props) => (
                       <div className="relative h-9 w-9 p-0 font-normal flex items-center justify-center">
-                        {format(day, 'd')}
-                        {renderDay(day)}
+                        {format(props.date, 'd')}
+                        {renderDay(props.date)}
                       </div>
                     )
                   }}

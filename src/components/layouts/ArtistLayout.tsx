@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -19,7 +18,7 @@ import { useDarkMode } from '@/components/ui/dark-mode/DarkModeContext';
 import Logo from '@/components/Logo';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface ArtistLayoutProps {
   children: React.ReactNode;
@@ -102,14 +101,12 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children, title }) => {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Sidebar for desktop */}
       {!isMobile && (
         <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r">
           {renderNavigation()}
         </aside>
       )}
       
-      {/* Main content area */}
       <div className="flex flex-col flex-1 md:pl-64">
         <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-4 border-b bg-background/95 backdrop-blur">
           {isMobile && (
