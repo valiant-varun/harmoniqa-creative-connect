@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,8 +16,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import ArtistLayout from '@/components/layouts/ArtistLayout';
-import { Image, Plus, Upload, X } from 'lucide-react';
+import ProfilePhoto from '@/components/artist/ProfilePhoto';
+import MediaUploader from '@/components/artist/MediaUploader';
+import { Facebook, Instagram, Globe, Twitter } from 'lucide-react';
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -38,45 +42,72 @@ const formSchema = z.object({
   rate: z.string().optional(),
   instagram: z.string().optional(),
   twitter: z.string().optional(),
+  facebook: z.string().optional(),
   website: z.string().optional(),
 });
 
 const ArtistProfile: React.FC = () => {
-  const [portfolioImages, setPortfolioImages] = React.useState<string[]>([
+  const { toast } = useToast();
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [user, setUser] = useState({
+    name: "Loading...",
+  });
+  const [portfolioImages, setPortfolioImages] = useState<string[]>([
     'https://images.unsplash.com/photo-1501386761578-eac5c94b800a',
     'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7',
     'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f',
   ]);
   
+  useEffect(() => {
+    // In a real app, you would fetch the user from an API
+    // For this demo, we'll grab from localStorage
+    const storedUser = localStorage.getItem('harmoniqa_user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        setUser(userData);
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
+    }
+  }, []);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fullName: "Alex Morgan",
+      fullName: "",
       artistCategory: "Musician - Guitarist",
       location: "San Francisco, CA",
       bio: "Experienced guitarist with 8+ years performing at weddings, corporate events, and private parties. Specializing in acoustic covers and original compositions across multiple genres including pop, rock, and jazz.",
-      contactEmail: "alex.morgan@example.com",
-      contactPhone: "+1 (555) 123-4567",
+      contactEmail: "",
+      contactPhone: "",
       rate: "$250/hour",
-      instagram: "alexmorganmusic",
-      twitter: "alexmorganplays",
-      website: "alexmorgan.music",
+      instagram: "",
+      twitter: "",
+      facebook: "",
+      website: "",
     },
   });
+  
+  // Update form values when user data is loaded
+  useEffect(() => {
+    if (user && user.name !== "Loading...") {
+      form.setValue('fullName', user.name);
+      form.setValue('contactEmail', user.email || "");
+    }
+  }, [user, form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // TODO: Handle form submission
+    toast({
+      title: "Profile updated",
+      description: "Your profile has been successfully updated",
+    });
   }
 
-  const removeImage = (index: number) => {
-    setPortfolioImages(portfolioImages.filter((_, i) => i !== index));
-  };
-
-  const handleImageUpload = () => {
-    // This would normally open a file picker, but for demo purposes, we'll add a mock image
-    const mockNewImage = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4";
-    setPortfolioImages([...portfolioImages, mockNewImage]);
+  const handleProfilePhotoChange = (photoUrl: string | null) => {
+    setProfilePhoto(photoUrl);
+    // In a real app, you would save this to the user's profile
   };
 
   // Artist categories for dropdown
@@ -99,13 +130,17 @@ const ArtistProfile: React.FC = () => {
     defaultValues: {
       instagram: form.getValues('instagram'),
       twitter: form.getValues('twitter'),
+      facebook: "",
       website: form.getValues('website'),
     },
   });
 
   const onSocialSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    // TODO: Handle social form submission
+    toast({
+      title: "Social links updated",
+      description: "Your social media links have been updated successfully",
+    });
   };
 
   return (
@@ -115,10 +150,19 @@ const ArtistProfile: React.FC = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-                <CardDescription>
-                  Update your personal details and contact information.
-                </CardDescription>
+                <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
+                  <ProfilePhoto 
+                    initialPhoto={profilePhoto || ""} 
+                    onPhotoChange={handleProfilePhotoChange}
+                    name={user.name}
+                  />
+                  <div>
+                    <CardTitle>Personal Information</CardTitle>
+                    <CardDescription>
+                      Update your personal details and contact information.
+                    </CardDescription>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -265,39 +309,10 @@ const ArtistProfile: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {portfolioImages.map((image, index) => (
-                <div key={index} className="relative group">
-                  <img 
-                    src={`${image}?w=400&h=300&fit=crop`} 
-                    alt={`Portfolio item ${index + 1}`}
-                    className="w-full h-48 object-cover rounded-md"
-                  />
-                  <button 
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 bg-background/80 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-              
-              <Button 
-                variant="outline" 
-                className="flex flex-col items-center justify-center h-48 border-dashed" 
-                onClick={handleImageUpload}
-              >
-                <Upload className="h-8 w-8 mb-2" />
-                <span>Upload Media</span>
-              </Button>
-            </div>
-            
-            <div className="mt-6">
-              <Button variant="outline" className="flex items-center gap-2">
-                <Image className="h-4 w-4" />
-                <span>Add YouTube/Video Link</span>
-              </Button>
-            </div>
+            <MediaUploader 
+              portfolioImages={portfolioImages}
+              setPortfolioImages={setPortfolioImages}
+            />
           </CardContent>
         </Card>
         
@@ -322,7 +337,7 @@ const ArtistProfile: React.FC = () => {
                         <FormControl>
                           <div className="flex">
                             <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
-                              @
+                              <Instagram className="h-4 w-4" />
                             </span>
                             <Input 
                               className="rounded-l-none" 
@@ -345,7 +360,7 @@ const ArtistProfile: React.FC = () => {
                         <FormControl>
                           <div className="flex">
                             <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
-                              @
+                              <Twitter className="h-4 w-4" />
                             </span>
                             <Input 
                               className="rounded-l-none" 
@@ -360,19 +375,53 @@ const ArtistProfile: React.FC = () => {
                   />
                 </div>
                 
-                <FormField
-                  control={socialForm.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Website URL</FormLabel>
-                      <FormControl>
-                        <Input placeholder="https://yourwebsite.com" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={socialForm.control}
+                    name="facebook"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Facebook</FormLabel>
+                        <FormControl>
+                          <div className="flex">
+                            <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
+                              <Facebook className="h-4 w-4" />
+                            </span>
+                            <Input 
+                              className="rounded-l-none" 
+                              placeholder="username or page name" 
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={socialForm.control}
+                    name="website"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Website URL</FormLabel>
+                        <FormControl>
+                          <div className="flex">
+                            <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
+                              <Globe className="h-4 w-4" />
+                            </span>
+                            <Input 
+                              className="rounded-l-none"
+                              placeholder="https://yourwebsite.com" 
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
                 
                 <Button type="submit">Save Social Links</Button>
               </form>
