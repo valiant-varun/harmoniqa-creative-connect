@@ -15,6 +15,15 @@ import Messages from "./pages/organizer/Messages";
 import Settings from "./pages/organizer/Settings";
 import Help from "./pages/organizer/Help";
 import NotFound from "./pages/NotFound";
+import ArtistSignup from "./pages/artist/Signup";
+import ArtistLogin from "./pages/artist/Login";
+import ArtistDashboard from "./pages/artist/Dashboard";
+import ArtistProfile from "./pages/artist/Profile";
+import ArtistAvailability from "./pages/artist/Availability";
+import ArtistBookingRequests from "./pages/artist/BookingRequests";
+import ArtistEvents from "./pages/artist/Events";
+import ArtistMessages from "./pages/artist/Messages";
+import ArtistSettings from "./pages/artist/Settings";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +46,17 @@ const App = () => (
             <Route path="/organizer/messages" element={<Messages />} />
             <Route path="/organizer/settings" element={<Settings />} />
             <Route path="/organizer/help" element={<Help />} />
+            
+            {/* Artist Dashboard Routes */}
+            <Route path="/artist/signup" element={<ArtistSignup />} />
+            <Route path="/artist/login" element={<ArtistLogin />} />
+            <Route path="/artist/dashboard" element={<ArtistDashboard />} />
+            <Route path="/artist/profile" element={<ArtistProfile />} />
+            <Route path="/artist/availability" element={<ArtistAvailability />} />
+            <Route path="/artist/booking-requests" element={<ArtistBookingRequests />} />
+            <Route path="/artist/events" element={<ArtistEvents />} />
+            <Route path="/artist/messages" element={<ArtistMessages />} />
+            <Route path="/artist/settings" element={<ArtistSettings />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

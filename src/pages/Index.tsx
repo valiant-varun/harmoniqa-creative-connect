@@ -1,61 +1,82 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/components/ui/use-toast";
-import Navbar from '@/components/Navbar';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Music, User } from 'lucide-react';
+import Logo from '@/components/Logo';
 import UserRoleCard from '@/components/UserRoleCard';
 
-const Index = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-
-  const handleRoleSelect = (role: string) => {
-    if (role === 'Artist') {
-      toast({
-        title: "Artist Features Coming Soon",
-        description: "The artist features are still under development. Stay tuned!",
-      });
-    } else if (role === 'Event Organizer') {
-      navigate('/login');
-    }
-  };
-
+const Index: React.FC = () => {
   return (
-    <div className="min-h-screen bg-hero-pattern bg-cover bg-center text-white">
-      <Navbar />
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background via-background to-background/95 bg-[url('/bg-pattern.svg')] bg-fixed bg-cover">
+      {/* Navbar */}
+      <header className="border-b bg-background/95 backdrop-blur-sm">
+        <div className="container mx-auto py-4 px-6 flex items-center justify-between">
+          <Logo />
+          <div className="space-x-2">
+            <Link to="/login">
+              <Button variant="outline">Log In</Button>
+            </Link>
+            <Link to="/signup">
+              <Button>Sign Up</Button>
+            </Link>
+          </div>
+        </div>
+      </header>
       
-      <main className="container mx-auto px-4 pt-32 pb-20 min-h-screen flex flex-col justify-center items-center">
-        <div className="max-w-4xl mx-auto text-center animate-fade-in-up">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-pulse-slow">
+      {/* Main Content */}
+      <main className="flex-grow container mx-auto flex flex-col items-center justify-center p-6 text-center">
+        <div className="max-w-4xl animate-fade-in-up">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
             Welcome to <span className="gradient-text">Harmoniqa!</span>
           </h1>
-          
-          <p className="text-xl md:text-2xl mb-12 text-gray-200">
+          <p className="text-xl sm:text-2xl text-muted-foreground mb-12">
             Where creativity meets opportunity. Book, perform, and shine with Harmoniqa.
           </p>
           
-          <div className="w-full max-w-3xl mx-auto mb-16">
-            <h2 className="text-2xl md:text-3xl font-medium mb-12">What are you?</h2>
-            
-            <div className="grid md:grid-cols-2 gap-8">
-              <UserRoleCard 
-                title="Artist" 
-                description="Showcase your talent, get discovered, and book your next performance." 
-                onClick={() => handleRoleSelect('Artist')}
-              />
-              
-              <UserRoleCard 
-                title="Event Organizer" 
-                description="Find the perfect talent for your events, venues, or special occasions." 
-                onClick={() => handleRoleSelect('Event Organizer')}
-              />
+          <div className="my-12">
+            <h2 className="text-2xl sm:text-3xl font-medium mb-8">What are you?</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+              <Link to="/artist/signup">
+                <UserRoleCard 
+                  icon={Music} 
+                  title="Artist" 
+                  description="Showcase your talent and get booked for events"
+                />
+              </Link>
+              <Link to="/signup">
+                <UserRoleCard 
+                  icon={User} 
+                  title="Event Organizer" 
+                  description="Find and book talented artists for your events"
+                />
+              </Link>
+            </div>
+          </div>
+          
+          <div className="mt-16 space-y-6">
+            <h2 className="text-2xl sm:text-3xl font-medium">Already registered?</h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link to="/artist/login">
+                <Button variant="outline" size="lg" className="gap-2">
+                  <Music className="h-4 w-4" />
+                  Artist Login
+                </Button>
+              </Link>
+              <Link to="/login">
+                <Button variant="outline" size="lg" className="gap-2">
+                  <User className="h-4 w-4" />
+                  Organizer Login
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </main>
       
-      <footer className="bg-black/40 backdrop-blur-sm py-6">
-        <div className="container mx-auto px-4 text-center text-gray-400">
+      {/* Footer */}
+      <footer className="border-t bg-background/95 backdrop-blur-sm">
+        <div className="container mx-auto py-6 px-6 text-center text-muted-foreground">
           <p>© 2025 Harmoniqa. All rights reserved.</p>
         </div>
       </footer>
