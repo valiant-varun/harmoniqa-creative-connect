@@ -95,6 +95,20 @@ const ArtistProfile: React.FC = () => {
     "Other"
   ];
 
+  const socialForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      instagram: form.getValues('instagram'),
+      twitter: form.getValues('twitter'),
+      website: form.getValues('website'),
+    },
+  });
+
+  const onSocialSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+    // TODO: Handle social form submission
+  };
+
   return (
     <ArtistLayout title="My Profile & Portfolio">
       <div className="space-y-8">
@@ -297,69 +311,73 @@ const ArtistProfile: React.FC = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="instagram"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Instagram</FormLabel>
-                    <FormControl>
-                      <div className="flex">
-                        <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
-                          @
-                        </span>
-                        <Input 
-                          className="rounded-l-none" 
-                          placeholder="username" 
-                          {...field} 
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              
-              <FormField
-                control={form.control}
-                name="twitter"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Twitter</FormLabel>
-                    <FormControl>
-                      <div className="flex">
-                        <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
-                          @
-                        </span>
-                        <Input 
-                          className="rounded-l-none" 
-                          placeholder="username" 
-                          {...field} 
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            
-            <FormField
-              control={form.control}
-              name="website"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Website URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="https://yourwebsite.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <Button type="submit">Save Social Links</Button>
+            <Form {...socialForm}>
+              <form onSubmit={socialForm.handleSubmit(onSocialSubmit)} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <FormField
+                    control={socialForm.control}
+                    name="instagram"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Instagram</FormLabel>
+                        <FormControl>
+                          <div className="flex">
+                            <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
+                              @
+                            </span>
+                            <Input 
+                              className="rounded-l-none" 
+                              placeholder="username" 
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={socialForm.control}
+                    name="twitter"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Twitter</FormLabel>
+                        <FormControl>
+                          <div className="flex">
+                            <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
+                              @
+                            </span>
+                            <Input 
+                              className="rounded-l-none" 
+                              placeholder="username" 
+                              {...field} 
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                
+                <FormField
+                  control={socialForm.control}
+                  name="website"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Website URL</FormLabel>
+                      <FormControl>
+                        <Input placeholder="https://yourwebsite.com" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <Button type="submit">Save Social Links</Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </div>
