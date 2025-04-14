@@ -1,206 +1,234 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import DashboardLayout from '@/components/layouts/DashboardLayout';
-import { Card } from '@/components/ui/card';
+import Footer from '@/components/Footer';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useNavigate } from 'react-router-dom';
-import { Calendar, MessageSquare, Music, Star, ArrowRight } from 'lucide-react';
+import { Calendar, DollarSign, Music, Users } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { LineChart, BarChart, PieChart } from '@/components/ui/charts';
 
 const Dashboard: React.FC = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  
-  useEffect(() => {
-    const userData = localStorage.getItem('harmoniqa_user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-
-  const stats = [
-    { 
-      title: 'Upcoming Events', 
-      value: '3', 
-      icon: Calendar, 
-      color: 'from-blue-500 to-blue-700' 
-    },
-    { 
-      title: 'New Messages', 
-      value: '5', 
-      icon: MessageSquare, 
-      color: 'from-purple-500 to-purple-700' 
-    },
-    { 
-      title: 'Artists Booked', 
-      value: '7', 
-      icon: Music, 
-      color: 'from-pink-500 to-rose-500' 
-    },
-    { 
-      title: 'Pending Reviews', 
-      value: '2', 
-      icon: Star, 
-      color: 'from-amber-400 to-orange-500' 
-    }
+  // Sample data for charts
+  const revenueData = [
+    { name: 'Jan', value: 1200 },
+    { name: 'Feb', value: 1900 },
+    { name: 'Mar', value: 1500 },
+    { name: 'Apr', value: 2400 },
+    { name: 'May', value: 2800 },
+    { name: 'Jun', value: 3800 },
   ];
 
-  const quickActions = [
-    { 
-      title: 'Book an Artist', 
-      description: 'Find and book new talent for your events', 
-      icon: Music, 
-      action: () => navigate('/organizer/artists') 
-    },
-    { 
-      title: 'View My Bookings', 
-      description: 'Check your upcoming and past events', 
-      icon: Calendar, 
-      action: () => navigate('/organizer/bookings') 
-    },
-    { 
-      title: 'Open Messages', 
-      description: 'Chat with artists about your events', 
-      icon: MessageSquare, 
-      action: () => navigate('/organizer/messages') 
-    }
+  const bookingsData = [
+    { name: 'Mon', value: 4 },
+    { name: 'Tue', value: 3 },
+    { name: 'Wed', value: 5 },
+    { name: 'Thu', value: 7 },
+    { name: 'Fri', value: 9 },
+    { name: 'Sat', value: 12 },
+    { name: 'Sun', value: 8 },
   ];
 
-  const recentBookings = [
-    {
-      id: 1,
-      artistName: 'Jazz Ensemble',
-      eventName: 'Corporate Anniversary',
-      date: '2025-05-15',
-      status: 'confirmed',
-      image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?auto=format&fit=crop&q=80'
-    },
-    {
-      id: 2,
-      artistName: 'DJ Max',
-      eventName: 'Summer Beach Party',
-      date: '2025-05-20',
-      status: 'pending',
-      image: 'https://images.unsplash.com/photo-1571247483997-c04e3c98591c?auto=format&fit=crop&q=80'
-    },
-    {
-      id: 3,
-      artistName: 'Acoustic Trio',
-      eventName: 'Wedding Ceremony',
-      date: '2025-04-12',
-      status: 'completed',
-      image: 'https://images.unsplash.com/photo-1549213783-8284d0336c4f?auto=format&fit=crop&q=80'
-    }
+  const genreData = [
+    { name: 'Rock', value: 35 },
+    { name: 'Jazz', value: 25 },
+    { name: 'Pop', value: 20 },
+    { name: 'Classical', value: 15 },
+    { name: 'Other', value: 5 },
   ];
 
   return (
-    <DashboardLayout>
-      <div className="space-y-8 animate-fade-in-up">
-        {/* Welcome Section */}
-        <div>
-          <h1 className="text-3xl font-bold mb-2">
-            Welcome back, {user?.fullName || user?.name || 'Event Organizer'}!
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Here's what's happening with your events.
-          </p>
-        </div>
-
-        {/* Stats Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {stats.map((stat, index) => (
-            <Card key={index} className="border-none shadow-md hover:shadow-lg transition-shadow overflow-hidden">
-              <div className="p-6 flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{stat.title}</p>
-                  <h3 className="text-3xl font-bold">{stat.value}</h3>
+    <div className="flex flex-col min-h-screen">
+      <DashboardLayout>
+        <div className="space-y-6">
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          
+          {/* Stats Overview */}
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">48</div>
+                <p className="text-xs text-muted-foreground">+12% from last month</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Revenue</CardTitle>
+                <DollarSign className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">$12,546</div>
+                <p className="text-xs text-muted-foreground">+8.2% from last month</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Artists Hired</CardTitle>
+                <Music className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">24</div>
+                <p className="text-xs text-muted-foreground">+4 new this month</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2">
+                <CardTitle className="text-sm font-medium">Audience Reach</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">3,240</div>
+                <p className="text-xs text-muted-foreground">+18% from last month</p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* Analytics */}
+          <Tabs defaultValue="revenue">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="revenue">Revenue</TabsTrigger>
+              <TabsTrigger value="bookings">Bookings</TabsTrigger>
+              <TabsTrigger value="genres">Genres</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="revenue">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Revenue Overview</CardTitle>
+                  <CardDescription>Your revenue over the last 6 months</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LineChart data={revenueData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="bookings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Booking Frequency</CardTitle>
+                  <CardDescription>Number of bookings by day of week</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <BarChart data={bookingsData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="genres">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Genre Distribution</CardTitle>
+                  <CardDescription>Types of artists you've booked</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <PieChart data={genreData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+          
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Your latest bookings and interactions</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Jazz Quartet booked for Corporate Event</p>
+                    <p className="text-xs text-muted-foreground">Today at 2:30 PM</p>
+                  </div>
+                  <Button variant="outline" size="sm">View</Button>
                 </div>
-                <div className={`bg-gradient-to-br ${stat.color} p-3 rounded-lg text-white`}>
-                  <stat.icon className="h-6 w-6" />
+                
+                <div className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Message from Sarah's Rock Band</p>
+                    <p className="text-xs text-muted-foreground">Yesterday at 5:45 PM</p>
+                  </div>
+                  <Button variant="outline" size="sm">Reply</Button>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500 mr-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Payment confirmed for Wedding Reception</p>
+                    <p className="text-xs text-muted-foreground">Oct 15, 2023</p>
+                  </div>
+                  <Button variant="outline" size="sm">Details</Button>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-purple-500 mr-2"></div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">New review from Classical Strings</p>
+                    <p className="text-xs text-muted-foreground">Oct 12, 2023</p>
+                  </div>
+                  <Button variant="outline" size="sm">Read</Button>
                 </div>
               </div>
-              <div className={`h-1 w-full bg-gradient-to-r ${stat.color}`}></div>
-            </Card>
-          ))}
+            </CardContent>
+          </Card>
+          
+          {/* Upcoming Events */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Events</CardTitle>
+              <CardDescription>Your scheduled events for the next 30 days</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-md bg-harmoniqa-purple/20 flex items-center justify-center mr-4">
+                    <Calendar className="h-6 w-6 text-harmoniqa-purple" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">Corporate Holiday Party</p>
+                    <p className="text-sm text-muted-foreground">Dec 18, 2023 • 7:00 PM</p>
+                  </div>
+                  <Button>Manage</Button>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-md bg-harmoniqa-teal/20 flex items-center justify-center mr-4">
+                    <Calendar className="h-6 w-6 text-harmoniqa-teal" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">Wedding Reception</p>
+                    <p className="text-sm text-muted-foreground">Dec 23, 2023 • 5:30 PM</p>
+                  </div>
+                  <Button>Manage</Button>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-md bg-harmoniqa-purple/20 flex items-center justify-center mr-4">
+                    <Calendar className="h-6 w-6 text-harmoniqa-purple" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">New Year's Eve Gala</p>
+                    <p className="text-sm text-muted-foreground">Dec 31, 2023 • 9:00 PM</p>
+                  </div>
+                  <Button>Manage</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-
-        {/* Quick Actions */}
-        <section>
-          <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {quickActions.map((action, index) => (
-              <Card 
-                key={index} 
-                className="border-none shadow-md hover:shadow-lg transition-all hover:translate-y-[-2px] cursor-pointer" 
-                onClick={action.action}
-              >
-                <div className="p-6 flex flex-col items-center text-center space-y-4">
-                  <div className="p-3 rounded-full bg-gradient-to-br from-harmoniqa-purple/10 to-harmoniqa-teal/10 text-harmoniqa-purple dark:text-harmoniqa-lightPurple">
-                    <action.icon className="h-8 w-8" />
-                  </div>
-                  <h3 className="text-lg font-medium">{action.title}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">{action.description}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Recent Bookings */}
-        <section>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Recent Bookings</h2>
-            <Button variant="link" onClick={() => navigate('/organizer/bookings')} className="text-harmoniqa-purple dark:text-harmoniqa-lightPurple">
-              View All <ArrowRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {recentBookings.map((booking) => (
-              <Card key={booking.id} className="border-none shadow-md overflow-hidden">
-                <div className="relative h-32">
-                  <img 
-                    src={booking.image} 
-                    alt={booking.artistName} 
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-0 right-0 m-2">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      booking.status === 'confirmed' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' 
-                        : booking.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
-                    }`}>
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-medium">{booking.artistName}</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{booking.eventName}</p>
-                  <div className="flex justify-between items-center mt-3">
-                    <p className="text-sm">
-                      {new Date(booking.date).toLocaleDateString(undefined, { 
-                        month: 'short', 
-                        day: 'numeric', 
-                        year: 'numeric' 
-                      })}
-                    </p>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => navigate(`/organizer/bookings/${booking.id}`)}
-                      className="text-xs border-harmoniqa-purple text-harmoniqa-purple hover:bg-harmoniqa-purple/10 dark:border-harmoniqa-lightPurple dark:text-harmoniqa-lightPurple"
-                    >
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </section>
-      </div>
-    </DashboardLayout>
+      </DashboardLayout>
+      <Footer />
+    </div>
   );
 };
 
