@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, BarChart, PieChart } from '@/components/ui/charts';
 
-const Dashboard: React.FC = () => {
+const OrganizerDashboard: React.FC = () => {
   // Sample data for charts
   const revenueData = [
     { name: 'Jan', value: 1200 },
@@ -232,4 +232,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default OrganizerDashboard;
