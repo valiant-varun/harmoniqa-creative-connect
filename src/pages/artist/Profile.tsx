@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -65,48 +64,51 @@ const ArtistProfile: React.FC = () => {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   
   useEffect(() => {
-    // In a real app, you would fetch the user from an API
-    // For this demo, we'll grab from localStorage
     const storedUser = localStorage.getItem('harmoniqa_user');
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
-        setUser(userData);
+        setUser({
+          name: userData.name || "Guest User",
+          email: userData.email,
+        });
         
-        // Load saved profile data if available
         const savedProfile = localStorage.getItem('harmoniqa_artist_profile');
         if (savedProfile) {
           const profileData = JSON.parse(savedProfile);
           form.reset(profileData);
         }
         
-        // Load saved social data if available
         const savedSocial = localStorage.getItem('harmoniqa_artist_social');
         if (savedSocial) {
           const socialData = JSON.parse(savedSocial);
           socialForm.reset(socialData);
         }
         
-        // Load saved profile photo if available
         const savedPhoto = localStorage.getItem('harmoniqa_artist_photo');
         if (savedPhoto) {
           setProfilePhoto(savedPhoto);
         }
         
-        // Load saved YouTube videos if available
         const savedVideos = localStorage.getItem('harmoniqa_artist_videos');
         if (savedVideos) {
           setYoutubeVideos(JSON.parse(savedVideos));
         }
         
-        // Load saved portfolio images if available
         const savedImages = localStorage.getItem('harmoniqa_artist_images');
         if (savedImages) {
           setPortfolioImages(JSON.parse(savedImages));
         }
       } catch (e) {
         console.error("Error parsing user data", e);
+        setUser({
+          name: "Guest User",
+        });
       }
+    } else {
+      setUser({
+        name: "Guest User",
+      });
     }
   }, []);
   
@@ -128,7 +130,6 @@ const ArtistProfile: React.FC = () => {
     },
   });
   
-  // Update form values when user data is loaded
   useEffect(() => {
     if (user && user.name !== "Loading...") {
       form.setValue('fullName', user.name);
@@ -140,7 +141,6 @@ const ArtistProfile: React.FC = () => {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // Save the profile data to localStorage
     localStorage.setItem('harmoniqa_artist_profile', JSON.stringify(values));
     
     toast({
@@ -151,7 +151,6 @@ const ArtistProfile: React.FC = () => {
 
   const handleProfilePhotoChange = (photoUrl: string | null) => {
     setProfilePhoto(photoUrl);
-    // Save the profile photo to localStorage
     if (photoUrl) {
       localStorage.setItem('harmoniqa_artist_photo', photoUrl);
     } else {
@@ -159,7 +158,6 @@ const ArtistProfile: React.FC = () => {
     }
   };
 
-  // Artist categories for dropdown
   const categories = [
     "Musician - Guitarist",
     "Musician - Pianist",
@@ -187,7 +185,6 @@ const ArtistProfile: React.FC = () => {
 
   const onSocialSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    // Save the social data to localStorage
     localStorage.setItem('harmoniqa_artist_social', JSON.stringify(values));
     
     toast({
@@ -199,13 +196,11 @@ const ArtistProfile: React.FC = () => {
   const handleAddYoutubeVideo = () => {
     if (!youtubeUrl) return;
     
-    // Simple validation - check if it's a YouTube URL
     if (youtubeUrl.includes('youtube.com') || youtubeUrl.includes('youtu.be')) {
       const newVideos = [...youtubeVideos, youtubeUrl];
       setYoutubeVideos(newVideos);
       setYoutubeUrl('');
       
-      // Save to localStorage
       localStorage.setItem('harmoniqa_artist_videos', JSON.stringify(newVideos));
       
       toast({
@@ -226,7 +221,6 @@ const ArtistProfile: React.FC = () => {
     newVideos.splice(index, 1);
     setYoutubeVideos(newVideos);
     
-    // Save to localStorage
     localStorage.setItem('harmoniqa_artist_videos', JSON.stringify(newVideos));
   };
 
@@ -387,7 +381,6 @@ const ArtistProfile: React.FC = () => {
           </form>
         </Form>
         
-        {/* Portfolio Section */}
         <Card>
           <CardHeader>
             <CardTitle>Portfolio Gallery</CardTitle>
@@ -425,7 +418,6 @@ const ArtistProfile: React.FC = () => {
               {youtubeVideos.length > 0 && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
                   {youtubeVideos.map((url, index) => {
-                    // Extract video ID from URL
                     let videoId = '';
                     if (url.includes('youtube.com/watch?v=')) {
                       videoId = url.split('v=')[1].split('&')[0];
@@ -462,7 +454,6 @@ const ArtistProfile: React.FC = () => {
           </CardContent>
         </Card>
         
-        {/* Social Media Links */}
         <Card>
           <CardHeader>
             <CardTitle>Social Media & Online Presence</CardTitle>

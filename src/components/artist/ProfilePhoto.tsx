@@ -45,6 +45,11 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ initialPhoto, onPhotoChange
   };
   
   const getInitials = (name: string) => {
+    // Check if name is undefined, null or empty
+    if (!name || name.trim() === '' || name === 'Loading...') {
+      return 'U'; // U for Unknown or User
+    }
+    
     return name.split(' ')
       .map(part => part[0])
       .join('')
@@ -60,7 +65,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ initialPhoto, onPhotoChange
     >
       <Avatar className="h-24 w-24 border-2 border-harmoniqa-purple shadow-lg">
         {photoUrl ? (
-          <AvatarImage src={photoUrl} alt={name} />
+          <AvatarImage src={photoUrl} alt={name || 'User'} />
         ) : (
           <AvatarFallback className="bg-gradient-to-br from-harmoniqa-purple to-harmoniqa-teal text-white text-xl">
             {getInitials(name)}
