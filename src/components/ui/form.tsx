@@ -51,14 +51,25 @@ const useFormField = () => {
 
   // Add a safety check for the formContext
   if (!formContext) {
-    throw new Error("useFormField should be used within <Form> (FormProvider)")
+    console.error("useFormField called outside of a Form component")
+    return {
+      id: itemContext?.id || "",
+      name: fieldContext.name,
+      formItemId: itemContext?.id ? `${itemContext.id}-form-item` : "",
+      formDescriptionId: itemContext?.id ? `${itemContext.id}-form-item-description` : "",
+      formMessageId: itemContext?.id ? `${itemContext.id}-form-item-message` : "",
+      invalid: false,
+      isDirty: false,
+      isTouched: false,
+      error: undefined
+    }
   }
 
   const { getFieldState, formState } = formContext
 
   const fieldState = getFieldState(fieldContext.name, formState)
 
-  const { id } = itemContext
+  const { id } = itemContext || { id: "" }
 
   return {
     id,
@@ -74,9 +85,7 @@ type FormItemContextValue = {
   id: string
 }
 
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-)
+const FormItemContext = React.createContext<FormItemContextValue | undefined>(undefined)
 
 const FormItem = React.forwardRef<
   HTMLDivElement,

@@ -20,7 +20,7 @@ import { useToast } from "@/hooks/use-toast";
 import ArtistLayout from '@/components/layouts/ArtistLayout';
 import ProfilePhoto from '@/components/artist/ProfilePhoto';
 import MediaUploader from '@/components/artist/MediaUploader';
-import { Facebook, Instagram, Globe, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Globe, Twitter, Youtube } from 'lucide-react';
 
 const formSchema = z.object({
   fullName: z.string().min(2, {
@@ -44,12 +44,16 @@ const formSchema = z.object({
   twitter: z.string().optional(),
   facebook: z.string().optional(),
   website: z.string().optional(),
+  youtube: z.string().optional(),
 });
 
 const ArtistProfile: React.FC = () => {
   const { toast } = useToast();
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
-  const [user, setUser] = useState({
+  const [user, setUser] = useState<{
+    name: string;
+    email?: string;
+  }>({
     name: "Loading...",
   });
   const [portfolioImages, setPortfolioImages] = useState<string[]>([
@@ -57,6 +61,8 @@ const ArtistProfile: React.FC = () => {
     'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7',
     'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f',
   ]);
+  const [youtubeVideos, setYoutubeVideos] = useState<string[]>([]);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
   
   useEffect(() => {
     // In a real app, you would fetch the user from an API
@@ -66,6 +72,38 @@ const ArtistProfile: React.FC = () => {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
+        
+        // Load saved profile data if available
+        const savedProfile = localStorage.getItem('harmoniqa_artist_profile');
+        if (savedProfile) {
+          const profileData = JSON.parse(savedProfile);
+          form.reset(profileData);
+        }
+        
+        // Load saved social data if available
+        const savedSocial = localStorage.getItem('harmoniqa_artist_social');
+        if (savedSocial) {
+          const socialData = JSON.parse(savedSocial);
+          socialForm.reset(socialData);
+        }
+        
+        // Load saved profile photo if available
+        const savedPhoto = localStorage.getItem('harmoniqa_artist_photo');
+        if (savedPhoto) {
+          setProfilePhoto(savedPhoto);
+        }
+        
+        // Load saved YouTube videos if available
+        const savedVideos = localStorage.getItem('harmoniqa_artist_videos');
+        if (savedVideos) {
+          setYoutubeVideos(JSON.parse(savedVideos));
+        }
+        
+        // Load saved portfolio images if available
+        const savedImages = localStorage.getItem('harmoniqa_artist_images');
+        if (savedImages) {
+          setPortfolioImages(JSON.parse(savedImages));
+        }
       } catch (e) {
         console.error("Error parsing user data", e);
       }
@@ -86,6 +124,7 @@ const ArtistProfile: React.FC = () => {
       twitter: "",
       facebook: "",
       website: "",
+      youtube: "",
     },
   });
   
@@ -93,12 +132,17 @@ const ArtistProfile: React.FC = () => {
   useEffect(() => {
     if (user && user.name !== "Loading...") {
       form.setValue('fullName', user.name);
-      form.setValue('contactEmail', user.email || "");
+      if (user.email) {
+        form.setValue('contactEmail', user.email);
+      }
     }
   }, [user, form]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    // Save the profile data to localStorage
+    localStorage.setItem('harmoniqa_artist_profile', JSON.stringify(values));
+    
     toast({
       title: "Profile updated",
       description: "Your profile has been successfully updated",
@@ -107,7 +151,12 @@ const ArtistProfile: React.FC = () => {
 
   const handleProfilePhotoChange = (photoUrl: string | null) => {
     setProfilePhoto(photoUrl);
-    // In a real app, you would save this to the user's profile
+    // Save the profile photo to localStorage
+    if (photoUrl) {
+      localStorage.setItem('harmoniqa_artist_photo', photoUrl);
+    } else {
+      localStorage.removeItem('harmoniqa_artist_photo');
+    }
   };
 
   // Artist categories for dropdown
@@ -128,19 +177,57 @@ const ArtistProfile: React.FC = () => {
   const socialForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      instagram: form.getValues('instagram'),
-      twitter: form.getValues('twitter'),
+      instagram: "",
+      twitter: "",
       facebook: "",
-      website: form.getValues('website'),
+      website: "",
+      youtube: "",
     },
   });
 
   const onSocialSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    // Save the social data to localStorage
+    localStorage.setItem('harmoniqa_artist_social', JSON.stringify(values));
+    
     toast({
       title: "Social links updated",
       description: "Your social media links have been updated successfully",
     });
+  };
+  
+  const handleAddYoutubeVideo = () => {
+    if (!youtubeUrl) return;
+    
+    // Simple validation - check if it's a YouTube URL
+    if (youtubeUrl.includes('youtube.com') || youtubeUrl.includes('youtu.be')) {
+      const newVideos = [...youtubeVideos, youtubeUrl];
+      setYoutubeVideos(newVideos);
+      setYoutubeUrl('');
+      
+      // Save to localStorage
+      localStorage.setItem('harmoniqa_artist_videos', JSON.stringify(newVideos));
+      
+      toast({
+        title: "Video added",
+        description: "Your YouTube video has been added to your portfolio",
+      });
+    } else {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid YouTube URL",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  const handleRemoveYoutubeVideo = (index: number) => {
+    const newVideos = [...youtubeVideos];
+    newVideos.splice(index, 1);
+    setYoutubeVideos(newVideos);
+    
+    // Save to localStorage
+    localStorage.setItem('harmoniqa_artist_videos', JSON.stringify(newVideos));
   };
 
   return (
@@ -294,7 +381,7 @@ const ArtistProfile: React.FC = () => {
                 />
               </CardContent>
               <CardFooter>
-                <Button type="submit">Save Profile</Button>
+                <Button type="submit" className="bg-harmoniqa-purple hover:bg-harmoniqa-darkPurple">Save Profile</Button>
               </CardFooter>
             </Card>
           </form>
@@ -308,11 +395,70 @@ const ArtistProfile: React.FC = () => {
               Upload photos and videos of your performances to showcase your talent.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-6">
             <MediaUploader 
               portfolioImages={portfolioImages}
-              setPortfolioImages={setPortfolioImages}
+              setPortfolioImages={(images) => {
+                setPortfolioImages(images);
+                localStorage.setItem('harmoniqa_artist_images', JSON.stringify(images));
+              }}
             />
+            
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold mb-2">YouTube Videos</h3>
+              <div className="flex flex-col md:flex-row gap-4 mb-4">
+                <Input 
+                  placeholder="Paste YouTube video URL" 
+                  value={youtubeUrl} 
+                  onChange={(e) => setYoutubeUrl(e.target.value)}
+                  className="flex-1"
+                />
+                <Button 
+                  onClick={handleAddYoutubeVideo}
+                  className="bg-harmoniqa-teal hover:bg-harmoniqa-darkTeal"
+                >
+                  <Youtube className="mr-2 h-4 w-4" />
+                  Add YouTube Video
+                </Button>
+              </div>
+              
+              {youtubeVideos.length > 0 && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+                  {youtubeVideos.map((url, index) => {
+                    // Extract video ID from URL
+                    let videoId = '';
+                    if (url.includes('youtube.com/watch?v=')) {
+                      videoId = url.split('v=')[1].split('&')[0];
+                    } else if (url.includes('youtu.be/')) {
+                      videoId = url.split('youtu.be/')[1].split('?')[0];
+                    }
+                    
+                    return (
+                      <div key={index} className="relative">
+                        <iframe
+                          width="100%"
+                          height="215"
+                          src={`https://www.youtube.com/embed/${videoId}`}
+                          title={`YouTube video ${index + 1}`}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="rounded-md"
+                        ></iframe>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleRemoveYoutubeVideo(index)}
+                          className="absolute top-2 right-2"
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
         
@@ -423,7 +569,30 @@ const ArtistProfile: React.FC = () => {
                   />
                 </div>
                 
-                <Button type="submit">Save Social Links</Button>
+                <FormField
+                  control={socialForm.control}
+                  name="youtube"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>YouTube Channel</FormLabel>
+                      <FormControl>
+                        <div className="flex">
+                          <span className="flex items-center px-3 bg-muted border border-r-0 border-input rounded-l-md">
+                            <Youtube className="h-4 w-4" />
+                          </span>
+                          <Input 
+                            className="rounded-l-none"
+                            placeholder="https://youtube.com/c/yourchannel" 
+                            {...field} 
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <Button type="submit" className="bg-harmoniqa-purple hover:bg-harmoniqa-darkPurple">Save Social Links</Button>
               </form>
             </Form>
           </CardContent>

@@ -1,5 +1,6 @@
+
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home,
   User,
@@ -12,7 +13,8 @@ import {
   Moon,
   Sun,
   Menu,
-  X
+  X,
+  Music
 } from 'lucide-react';
 import { useDarkMode } from '@/components/ui/dark-mode/DarkModeContext';
 import Logo from '@/components/Logo';
@@ -28,6 +30,7 @@ interface ArtistLayoutProps {
 const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children, title }) => {
   const { theme, toggleTheme } = useDarkMode();
   const location = useLocation();
+  const navigate = useNavigate();
   const isMobile = useMediaQuery('(max-width: 768px)');
   
   const isActive = (path: string) => location.pathname === path;
@@ -46,7 +49,9 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children, title }) => {
   const renderNavigation = () => (
     <div className="h-full flex flex-col">
       <div className="p-4">
-        <Logo className="mb-6" />
+        <Link to="/" className="inline-block transition-transform hover:scale-105">
+          <Logo className="mb-6" />
+        </Link>
       </div>
       
       <nav className="flex-1 px-4 space-y-1">
@@ -60,11 +65,11 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children, title }) => {
               to={item.path}
               className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-md transition-colors ${
                 active 
-                  ? 'bg-harmoniqa-purple/10 text-harmoniqa-purple' 
+                  ? 'bg-harmoniqa-purple/20 text-harmoniqa-purple dark:text-harmoniqa-lightPurple' 
                   : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
               }`}
             >
-              <NavIcon className={`mr-3 h-5 w-5 ${active ? 'text-harmoniqa-purple' : ''}`} />
+              <NavIcon className={`mr-3 h-5 w-5 ${active ? 'text-harmoniqa-purple dark:text-harmoniqa-lightPurple' : ''}`} />
               {item.name}
             </Link>
           );
@@ -102,13 +107,13 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children, title }) => {
   return (
     <div className="flex h-screen bg-background">
       {!isMobile && (
-        <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r">
+        <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 border-r border-r-harmoniqa-purple/10">
           {renderNavigation()}
         </aside>
       )}
       
       <div className="flex flex-col flex-1 md:pl-64">
-        <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-4 border-b bg-background/95 backdrop-blur">
+        <header className="sticky top-0 z-10 flex items-center justify-between h-16 px-4 border-b bg-background/95 backdrop-blur border-b-harmoniqa-purple/10">
           {isMobile && (
             <Sheet>
               <SheetTrigger asChild>
@@ -122,7 +127,15 @@ const ArtistLayout: React.FC<ArtistLayoutProps> = ({ children, title }) => {
             </Sheet>
           )}
           
-          <div className="flex-1 md:ml-4">
+          <div className="flex-1 md:ml-4 flex items-center">
+            {isMobile && (
+              <Link to="/" className="mr-4 transition-transform hover:scale-105">
+                <div className="flex items-center">
+                  <Music className="h-6 w-6 text-harmoniqa-purple" />
+                  <span className="ml-2 font-semibold text-harmoniqa-purple">Artist Portal</span>
+                </div>
+              </Link>
+            )}
             <h1 className="text-xl font-semibold text-foreground">
               {title || "Artist Portal"}
             </h1>

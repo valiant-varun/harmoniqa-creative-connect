@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,6 +56,7 @@ const App = () => (
             <Route path="/artist/events" element={<ArtistEvents />} />
             <Route path="/artist/messages" element={<ArtistMessages />} />
             <Route path="/artist/settings" element={<ArtistSettings />} />
+            <Route path="/artist/help" element={<Help />} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

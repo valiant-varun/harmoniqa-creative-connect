@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -48,7 +48,7 @@ const ArtistSettings: React.FC = () => {
   const accountForm = useForm<z.infer<typeof accountFormSchema>>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
-      email: "alex.morgan@example.com",
+      email: "artist@example.com",
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
@@ -79,9 +79,77 @@ const ArtistSettings: React.FC = () => {
     },
   });
   
+  // Load saved settings on mount
+  useEffect(() => {
+    // Load account settings
+    const savedAccount = localStorage.getItem('harmoniqa_artist_account');
+    if (savedAccount) {
+      try {
+        const accountData = JSON.parse(savedAccount);
+        accountForm.reset(accountData);
+      } catch (e) {
+        console.error("Error parsing account data", e);
+      }
+    }
+    
+    // Load notification settings
+    const savedNotifications = localStorage.getItem('harmoniqa_artist_notifications');
+    if (savedNotifications) {
+      try {
+        const notificationData = JSON.parse(savedNotifications);
+        notificationForm.reset(notificationData);
+      } catch (e) {
+        console.error("Error parsing notification data", e);
+      }
+    }
+    
+    // Load privacy settings
+    const savedPrivacy = localStorage.getItem('harmoniqa_artist_privacy');
+    if (savedPrivacy) {
+      try {
+        const privacyData = JSON.parse(savedPrivacy);
+        privacyForm.reset(privacyData);
+      } catch (e) {
+        console.error("Error parsing privacy data", e);
+      }
+    }
+    
+    // Get user email from localStorage if available
+    const storedUser = localStorage.getItem('harmoniqa_user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData && userData.email) {
+          accountForm.setValue('email', userData.email);
+        }
+      } catch (e) {
+        console.error("Error parsing user data", e);
+      }
+    }
+  }, [accountForm, notificationForm, privacyForm]);
+  
   // Form submit handlers
   const onAccountSubmit = (data: z.infer<typeof accountFormSchema>) => {
     console.log('Account settings saved:', data);
+    
+    // Save to localStorage
+    localStorage.setItem('harmoniqa_artist_account', JSON.stringify({
+      email: data.email,
+      // Don't store passwords in localStorage in a real app
+    }));
+    
+    // Also update the user's email in the main user object
+    const storedUser = localStorage.getItem('harmoniqa_user');
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        userData.email = data.email;
+        localStorage.setItem('harmoniqa_user', JSON.stringify(userData));
+      } catch (e) {
+        console.error("Error updating user data", e);
+      }
+    }
+    
     toast({
       title: "Account settings saved",
       description: "Your account settings have been updated successfully.",
@@ -90,6 +158,10 @@ const ArtistSettings: React.FC = () => {
   
   const onNotificationSubmit = (data: z.infer<typeof notificationFormSchema>) => {
     console.log('Notification settings saved:', data);
+    
+    // Save to localStorage
+    localStorage.setItem('harmoniqa_artist_notifications', JSON.stringify(data));
+    
     toast({
       title: "Notification settings saved",
       description: "Your notification preferences have been updated.",
@@ -98,10 +170,42 @@ const ArtistSettings: React.FC = () => {
   
   const onPrivacySubmit = (data: z.infer<typeof privacyFormSchema>) => {
     console.log('Privacy settings saved:', data);
+    
+    // Save to localStorage
+    localStorage.setItem('harmoniqa_artist_privacy', JSON.stringify(data));
+    
     toast({
       title: "Privacy settings saved",
       description: "Your privacy settings have been updated.",
     });
+  };
+
+  const handleDeleteAccount = () => {
+    const confirmed = window.confirm("Are you sure you want to delete your account? This action cannot be undone.");
+    if (confirmed) {
+      // In a real app, you would make an API call to delete the account
+      
+      // Clear all localStorage items
+      localStorage.removeItem('harmoniqa_user');
+      localStorage.removeItem('harmoniqa_artist_profile');
+      localStorage.removeItem('harmoniqa_artist_social');
+      localStorage.removeItem('harmoniqa_artist_photo');
+      localStorage.removeItem('harmoniqa_artist_videos');
+      localStorage.removeItem('harmoniqa_artist_images');
+      localStorage.removeItem('harmoniqa_artist_account');
+      localStorage.removeItem('harmoniqa_artist_notifications');
+      localStorage.removeItem('harmoniqa_artist_privacy');
+      
+      toast({
+        title: "Account deleted",
+        description: "Your account has been successfully deleted. Redirecting to home page...",
+      });
+      
+      // Redirect to home page after a short delay
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 3000);
+    }
   };
   
   return (
@@ -115,8 +219,8 @@ const ArtistSettings: React.FC = () => {
         
         {/* Account Settings */}
         <TabsContent value="account">
-          <Card>
-            <CardHeader>
+          <Card className="border-harmoniqa-purple/10">
+            <CardHeader className="bg-gradient-to-r from-harmoniqa-purple/5 to-transparent">
               <CardTitle>Account Settings</CardTitle>
               <CardDescription>
                 Update your account information and password
@@ -204,13 +308,24 @@ const ArtistSettings: React.FC = () => {
                             This will permanently delete your account and all associated data.
                           </p>
                         </div>
-                        <Button variant="destructive">Delete Account</Button>
+                        <Button 
+                          variant="destructive"
+                          type="button"
+                          onClick={handleDeleteAccount}
+                        >
+                          Delete Account
+                        </Button>
                       </div>
                     </div>
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit">Save Account Settings</Button>
+                  <Button 
+                    type="submit" 
+                    className="bg-harmoniqa-purple hover:bg-harmoniqa-darkPurple"
+                  >
+                    Save Account Settings
+                  </Button>
                 </CardFooter>
               </form>
             </Form>
@@ -219,8 +334,8 @@ const ArtistSettings: React.FC = () => {
         
         {/* Notification Settings */}
         <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
+          <Card className="border-harmoniqa-purple/10">
+            <CardHeader className="bg-gradient-to-r from-harmoniqa-purple/5 to-transparent">
               <CardTitle>Notification Settings</CardTitle>
               <CardDescription>
                 Customize how and when you receive notifications
@@ -236,7 +351,7 @@ const ArtistSettings: React.FC = () => {
                       control={notificationForm.control}
                       name="emailBookingRequests"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Booking Requests</FormLabel>
                             <FormDescription>
@@ -257,7 +372,7 @@ const ArtistSettings: React.FC = () => {
                       control={notificationForm.control}
                       name="emailMessages"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Messages</FormLabel>
                             <FormDescription>
@@ -278,7 +393,7 @@ const ArtistSettings: React.FC = () => {
                       control={notificationForm.control}
                       name="emailBookingConfirmations"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Booking Confirmations</FormLabel>
                             <FormDescription>
@@ -299,7 +414,7 @@ const ArtistSettings: React.FC = () => {
                       control={notificationForm.control}
                       name="emailMarketingUpdates"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Marketing Updates</FormLabel>
                             <FormDescription>
@@ -324,7 +439,7 @@ const ArtistSettings: React.FC = () => {
                       control={notificationForm.control}
                       name="smsBookingRequests"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Booking Requests</FormLabel>
                             <FormDescription>
@@ -345,7 +460,7 @@ const ArtistSettings: React.FC = () => {
                       control={notificationForm.control}
                       name="smsBookingConfirmations"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Booking Confirmations</FormLabel>
                             <FormDescription>
@@ -364,7 +479,12 @@ const ArtistSettings: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit">Save Notification Settings</Button>
+                  <Button 
+                    type="submit"
+                    className="bg-harmoniqa-purple hover:bg-harmoniqa-darkPurple"
+                  >
+                    Save Notification Settings
+                  </Button>
                 </CardFooter>
               </form>
             </Form>
@@ -373,8 +493,8 @@ const ArtistSettings: React.FC = () => {
         
         {/* Privacy Settings */}
         <TabsContent value="privacy">
-          <Card>
-            <CardHeader>
+          <Card className="border-harmoniqa-purple/10">
+            <CardHeader className="bg-gradient-to-r from-harmoniqa-purple/5 to-transparent">
               <CardTitle>Privacy Settings</CardTitle>
               <CardDescription>
                 Control who can see your information and how it's displayed
@@ -414,7 +534,7 @@ const ArtistSettings: React.FC = () => {
                       control={privacyForm.control}
                       name="showContactInfo"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Show Contact Information</FormLabel>
                             <FormDescription>
@@ -435,7 +555,7 @@ const ArtistSettings: React.FC = () => {
                       control={privacyForm.control}
                       name="showLocation"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Show Location</FormLabel>
                             <FormDescription>
@@ -456,7 +576,7 @@ const ArtistSettings: React.FC = () => {
                       control={privacyForm.control}
                       name="showPricing"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4 hover:bg-muted/50">
                           <div className="space-y-0.5">
                             <FormLabel className="text-base">Show Pricing</FormLabel>
                             <FormDescription>
@@ -475,7 +595,12 @@ const ArtistSettings: React.FC = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit">Save Privacy Settings</Button>
+                  <Button 
+                    type="submit"
+                    className="bg-harmoniqa-purple hover:bg-harmoniqa-darkPurple"
+                  >
+                    Save Privacy Settings
+                  </Button>
                 </CardFooter>
               </form>
             </Form>

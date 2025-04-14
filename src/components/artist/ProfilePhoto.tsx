@@ -58,7 +58,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ initialPhoto, onPhotoChange
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <Avatar className="h-24 w-24 border-2 border-gray-200 dark:border-gray-700">
+      <Avatar className="h-24 w-24 border-2 border-harmoniqa-purple shadow-lg">
         {photoUrl ? (
           <AvatarImage src={photoUrl} alt={name} />
         ) : (
@@ -71,7 +71,7 @@ const ProfilePhoto: React.FC<ProfilePhotoProps> = ({ initialPhoto, onPhotoChange
       <div className={`absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center transition-opacity ${isHovering ? 'opacity-100' : 'opacity-0'}`}>
         <div className="flex flex-col items-center">
           <label htmlFor="photo-upload" className="cursor-pointer">
-            <Camera className="h-6 w-6 text-white" />
+            <Camera className="h-6 w-6 text-white hover:text-harmoniqa-lightPurple transition-colors" />
           </label>
           <input 
             id="photo-upload" 
