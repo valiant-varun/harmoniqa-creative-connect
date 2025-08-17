@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LineChart, BarChart, PieChart } from '@/components/ui/charts';
 
-const OrganizerDashboard: React.FC = () => {
+const OrganizerDashboard: React.FC = () =>{
   // Sample data for charts
   const revenueData = [
     { name: 'Jan', value: 1200 },
