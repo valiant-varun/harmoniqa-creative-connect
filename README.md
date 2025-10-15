@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/5273dbc7-23a8-4b73-9f49-313e43a433ad
+**URL**: https://harmoniqa-creative-connect.vercel.app/
 
 ## How can I edit this code?
 
@@ -10,9 +10,7 @@ There are several ways of editing your application.
 
 **Use Lovable**
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5273dbc7-23a8-4b73-9f49-313e43a433ad) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
+Simply visit the [Harmoniqa Platform](https://harmoniqa-creative-connect.vercel.app/) and start prompting.
 
 **Use your preferred IDE**
 
@@ -60,14 +58,4 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/5273dbc7-23a8-4b73-9f49-313e43a433ad) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes it is!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
